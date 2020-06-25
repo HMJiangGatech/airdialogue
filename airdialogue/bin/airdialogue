@@ -8,12 +8,14 @@ from tensorflow import app
 from airdialogue.context_generator.context_generator_main import add_arguments as add_arguments_cx
 from airdialogue.prepro.prepro_main import add_arguments as add_arguments_pr
 from airdialogue.simulator.simulator_main import add_arguments as add_arguments_sim
+from airdialogue.simulator_ope.simulator_main import add_arguments as add_arguments_sim_ope
 from airdialogue.visualizer.visualizer_main import add_arguments as add_arguments_vis
 from airdialogue.evaluator.evaluator_main import add_arguments as add_arguments_eval
 from airdialogue.generate_infer.generate_infer_main import add_arguments as add_arguments_gen
 from airdialogue.context_generator.context_generator_main import main as main_cx
 from airdialogue.prepro.prepro_main import main as main_pr
 from airdialogue.simulator.simulator_main import main as main_sim
+from airdialogue.simulator_ope.simulator_main import main as main_sim_ope
 from airdialogue.visualizer.visualizer_main import main as main_vis
 from airdialogue.evaluator.evaluator_main import main as main_eval
 from airdialogue.generate_infer.generate_infer_main import main as main_gen
@@ -35,6 +37,10 @@ if __name__ == "__main__":
       add_arguments_sim(this_parser)
       FLAGS, unparsed = this_parser.parse_known_args()
       main_sim(FLAGS)
+    elif sys.argv[1] == 'sim_ope':
+      add_arguments_sim_ope(this_parser)
+      FLAGS, unparsed = this_parser.parse_known_args()
+      main_sim_ope(FLAGS)
     elif sys.argv[1] == 'vis':
       add_arguments_vis(this_parser)
       FLAGS, unparsed = this_parser.parse_known_args()
