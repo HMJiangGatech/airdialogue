@@ -110,8 +110,8 @@ def main(FLAGS):
       random_respond_error=True,
   )
   all_rewards = {}
+  ct, stats = cg.generate_context(num_samples, output_object=True)
   for tgt_policy,ref_policy in itertools.permutations(range(FLAGS.n_policies),2):
-    ct, stats = cg.generate_context(num_samples, output_object=True)
     tgt_policy_accu = tgt_policy/(FLAGS.n_policies-1)
     ref_policy_accu = ref_policy/(FLAGS.n_policies-1)
     tgt_policy = "L"+str(tgt_policy)

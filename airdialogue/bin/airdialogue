@@ -4,7 +4,6 @@ global FLAGS
 
 import sys
 import argparse
-from tensorflow import app
 from airdialogue.context_generator.context_generator_main import add_arguments as add_arguments_cx
 from airdialogue.prepro.prepro_main import add_arguments as add_arguments_pr
 from airdialogue.simulator.simulator_main import add_arguments as add_arguments_sim
