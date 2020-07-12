@@ -489,7 +489,7 @@ class Interaction(object):
     reservation = knowledge_base.get_json()['reservation']
     utterance = []
     # 0a. decides who speaks first 0--customer, 1--agent
-    speaker = int(np.random.random() < 0.5)
+    speaker = 0
     # 0b. generate customer's full condition and agent_condition
     customer_condition = customer.get_customer_condition()
     agent_condition = {}
