@@ -65,6 +65,22 @@ airdialogue sim \
     --num_samples 100
 ```
 
+#### Simulator For Off-Policy Evaluation
+
+This will generate data for off-policy evaluation for rule-based models using simulator in *leave-one-bot-out* manner.
+
+```
+airdialogue sim_ope \
+    --output_dir PATH_TO_OUTPUT_DIR \
+    --n_policies 6 \
+    --num_samples 100
+```
+
+- `n_polices` is the number different polices.
+
+This will create `n_policies` folders for different target policies. Each folder contains `n_policies-1` files, which contain `num_samples` dialogues collected using different behavior policies.
+
+
 #### Visualization
 Visualization tool displays the content of the raw json file.
 ```
@@ -85,7 +101,7 @@ More details can be found on the [Airdialogue competition tutorial worksheet][ai
 bash airdialogue/codalab/simulate_codalab.sh <path_to_data>/json/dev_data.json <path_to_data>/json/dev_kb.json <model_folder>
 ```
 
-[data]: https://storage.googleapis.com/airdialogue/airdialogue_data.tar.gz
+[data]: https://storage.googleapis.com/airdialogue/airdialogue_data.tar.gz
 [paper]: https://www.aclweb.org/anthology/D18-1419/
 [airdialogue_model]: https://github.com/google/airdialogue_model
 [airdialogue_tutorial]: https://worksheets.codalab.org/worksheets/0xa79833f4b3c24f4188cee7131b120a59

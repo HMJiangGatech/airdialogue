@@ -103,7 +103,7 @@ def main(FLAGS):
       firstname_file=FLAGS.firstname_file,
       lastname_file=FLAGS.lastname_file,
       airportcode_file=FLAGS.airportcode_file)
-  inter = interaction.Interaction(
+  inter = interaction.InteractionOPE(
       cg.fact_obj,
       fix_response_candidate=True,
       first_ask_prob=0,
