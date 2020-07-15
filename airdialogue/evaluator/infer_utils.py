@@ -20,15 +20,16 @@ from airdialogue.evaluator.metrics import bleu
 from airdialogue.evaluator.metrics import rouge
 from airdialogue.evaluator.metrics import kl
 
-ROLE_TOKENS=['<t1>','<t2>']
+ROLE_TOKENS = ["<t1>", "<t2>"]
+
 
 def evaluate(ref_file, trans_file, metric):
   """Pick a metric and evaluate depending on task."""
   if ":" in metric:
-      metric,mode = metric.split(":")
+    metric, mode = metric.split(":")
   else:
-      mode = "brief"
-  assert mode in ["brief","all"]
+    mode = "brief"
+  assert mode in ["brief", "all"]
   # BLEU scores for translation task
   if metric.lower() == "bleu":
     evaluation_score = _bleu(
@@ -59,7 +60,8 @@ def _kl(ref_file, trans_file, mode="brief"):
     with codecs.getreader("utf-8")(tf.gfile.GFile(reference_filename,
                                                   "rb")) as fh:
       for line in fh:
-        reference, role = process_dialogue_infer(line.rstrip(), get_role_token=True)
+        reference, role = process_dialogue_infer(
+            line.rstrip(), get_role_token=True)
         reference_text.append(reference.split(" "))
         role_tokens.append(role)
 
@@ -71,20 +73,20 @@ def _kl(ref_file, trans_file, mode="brief"):
   results = {}
   kl_scores = kl.compute_kl(reference_text, translations, max_order)
   for key in kl_scores:
-    results['all-'+key] = kl_scores[key]
-  if mode=="brief":
-      return sum(results.values())/len(results)
+    results["all-" + key] = kl_scores[key]
+  if mode == "brief":
+    return sum(results.values()) / len(results)
 
   for role in ROLE_TOKENS:
     _sub_ref_texts = []
     _sub_trans = []
-    for _r,_t,_role in zip(reference_text, translations, role_tokens):
+    for _r, _t, _role in zip(reference_text, translations, role_tokens):
       if _role == role:
         _sub_ref_texts.append(_r)
         _sub_trans.append(_t)
     kl_scores = kl.compute_kl(_sub_ref_texts, _sub_trans, max_order)
     for key in kl_scores:
-      results[role+'-'+key] = kl_scores[key]
+      results[role + "-" + key] = kl_scores[key]
   return results
 
 def _bleu(ref_file, trans_file, mode="brief"):
@@ -104,7 +106,8 @@ def _bleu(ref_file, trans_file, mode="brief"):
   for references in zip(*reference_text):
     reference_list = []
     for reference in references:
-      reference,role = process_dialogue_infer(reference.rstrip(), get_role_token=True)
+      reference, role = process_dialogue_infer(
+          reference.rstrip(), get_role_token=True)
       reference_list.append(reference.split(" "))
     per_segment_references.append(reference_list)
     role_tokens.append(role)
@@ -117,19 +120,20 @@ def _bleu(ref_file, trans_file, mode="brief"):
   results = {}
   bleu_score, _, _, _, _, _ = bleu.compute_bleu(per_segment_references,
                                                 translations, max_order, smooth)
-  results['all'] = 100 * bleu_score
-  if mode=="brief":
-      return results['all']
+  results["all"] = 100 * bleu_score
+  if mode == "brief":
+    return results["all"]
 
   for role in ROLE_TOKENS:
     _sub_ref_texts = []
     _sub_trans = []
-    for _r,_t,_role in zip(per_segment_references, translations, role_tokens):
+    for _r, _t, _role in zip(per_segment_references, translations, role_tokens):
       if _role == role:
         _sub_ref_texts.append(_r)
         _sub_trans.append(_t)
-    bleu_score, _, _, _, _, _ = bleu.compute_bleu(_sub_ref_texts, _sub_trans, max_order, smooth)
-    results[role] = 100*bleu_score
+    bleu_score, _, _, _, _, _ = bleu.compute_bleu(_sub_ref_texts, _sub_trans,
+                                                  max_order, smooth)
+    results[role] = 100 * bleu_score
 
   return results
 
@@ -143,7 +147,7 @@ def _rouge(ref_file, summarization_file, mode="brief"):
   role_tokens = []
   with codecs.getreader("utf-8")(tf.gfile.GFile(ref_file, "rb")) as fh:
     for line in fh:
-      ref,role = process_dialogue_infer(line.rstrip(), get_role_token=True)
+      ref, role = process_dialogue_infer(line.rstrip(), get_role_token=True)
       references.append(ref)
       role_tokens.append(role)
 
@@ -154,14 +158,14 @@ def _rouge(ref_file, summarization_file, mode="brief"):
       hypotheses.append(line)
 
   rouge_score_map = rouge.rouge(hypotheses, references)
-  results['all'] = 100 * rouge_score_map["rouge_l/f_score"]
-  if mode=="brief":
-      return results['all']
+  results["all"] = 100 * rouge_score_map["rouge_l/f_score"]
+  if mode == "brief":
+    return results["all"]
 
   for role in ROLE_TOKENS:
     _sub_ref_texts = []
     _sub_hypos = []
-    for _r,_t,_role in zip(references, hypotheses, role_tokens):
+    for _r, _t, _role in zip(references, hypotheses, role_tokens):
       if _role == role:
         _sub_ref_texts.append(_r)
         _sub_hypos.append(_t)
@@ -173,8 +177,8 @@ def _rouge(ref_file, summarization_file, mode="brief"):
 
 def process_dialogue_infer(file_line, get_role_token=False):
   # split the end token (<t1>,<t2>)
-  _line = file_line.replace(' <eod>','')
-  _line = _line.rstrip().split("|")[1].rsplit(' ', 1)
+  _line = file_line.replace(" <eod>", "")
+  _line = _line.rstrip().split("|")[1].rsplit(" ", 1)
   if not get_role_token:
     return _line[0]
   else:

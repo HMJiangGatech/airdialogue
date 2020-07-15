@@ -38,8 +38,12 @@ python setup.py install
 The official scoring function evaluates the predictive results for a trained model and compare it to the AirDialogue dataset.
 
 ```
-airdialogue score --true_data PATH_TO_DATA_FILE --true_kb PATH_TO_KB_FILE
+airdialogue score --true_data PATH_TO_DATA_FILE --true_kb PATH_TO_KB_FILE \
+    --infer_metrics bleu
 ```
+
+`--infer_metrics` can be one of (bleu:all|rouge:all|kl:all|bleu:brief|kl:brief).
+`brief` mode gives a single number metric. (bleu|kl) is equivalent to (belu:brief|kl:brief)
 
 #### Context Generation
 Context generator generates a valid context-action pair without conversatoin history.

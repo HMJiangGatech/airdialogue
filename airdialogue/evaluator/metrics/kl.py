@@ -32,7 +32,7 @@ def _get_ngrams(segments, order):
   """Extracts all n-grams upto a given maximum order from an input segment.
 
   Args:
-    segment: text segment from which n-grams will be extracted.
+    segments: text segment from which n-grams will be extracted.
     order: n of the n-grams returned.
 
   Returns:
@@ -47,8 +47,12 @@ def _get_ngrams(segments, order):
   return ngram_counts
 
 
-def compute_kl(reference_corpus, translation_corpus, max_order=4,
-                 freq_thre=100, workers=20, verbose=False):
+def compute_kl(reference_corpus,
+               translation_corpus,
+               max_order=4,
+               freq_thre=100,
+               workers=20,
+               verbose=False):
   """Computes KLdivergence of translated segments against one or more references.
 
   Args:
@@ -63,31 +67,30 @@ def compute_kl(reference_corpus, translation_corpus, max_order=4,
     3-Tuple with the BLEU score, n-gram precisions, geometric mean of n-gram
     precisions and brevity penalty.
   """
-  kl_by_order = [0] * max_order
   results = {}
-  itertool = tqdm.tqdm if verbose else lambda x,*args, **kw: x
+  itertool = tqdm.tqdm if verbose else lambda x, *args, **kw: x
 
-  for order in range(1,max_order+1):
+  for order in range(1, max_order + 1):
     with Pool(processes=workers) as pool:
-        chunksize = len(reference_corpus)//(3*workers)
-        chunkedexamples = [reference_corpus[i:i + chunksize]
-                           for i in range(0, len(reference_corpus), chunksize)]
-        ngram_counts = list(itertool(pool.imap(partial(_get_ngrams, order=order),chunkedexamples),\
-                                      total=len(chunkedexamples), \
-                                      desc="Calculating {}-gram for ref data".format(order)))
-        merged_ref_ngram_counts = collections.Counter()
-        for c in ngram_counts:
-            merged_ref_ngram_counts += c
+      chunksize = len(reference_corpus)//(3*workers)
+      chunkedexamples = [reference_corpus[i:i + chunksize]
+                         for i in range(0, len(reference_corpus), chunksize)]
+      ngram_counts = list(itertool(pool.imap(partial(_get_ngrams, order=order), chunkedexamples),\
+                                    total=len(chunkedexamples), \
+                                    desc="Calculating {}-gram for ref data".format(order)))
+      merged_ref_ngram_counts = collections.Counter()
+      for c in ngram_counts:
+        merged_ref_ngram_counts += c
     with Pool(processes=workers) as pool:
-        chunksize = len(translation_corpus)//(10*workers)
-        chunkedexamples = [translation_corpus[i:i + chunksize]
-                           for i in range(0, len(translation_corpus), chunksize)]
-        ngram_counts = list(itertool(pool.imap(partial(_get_ngrams, order=order),chunkedexamples),\
-                                      total=len(chunkedexamples), \
-                                      desc="Calculating {}-gram for trans data".format(order)))
-        merged_trans_ngram_counts = collections.Counter()
-        for c in ngram_counts:
-            merged_trans_ngram_counts += c
+      chunksize = len(translation_corpus)//(10*workers)
+      chunkedexamples = [translation_corpus[i:i + chunksize]
+                         for i in range(0, len(translation_corpus), chunksize)]
+      ngram_counts = list(itertool(pool.imap(partial(_get_ngrams, order=order), chunkedexamples),\
+                                    total=len(chunkedexamples), \
+                                    desc="Calculating {}-gram for trans data".format(order)))
+      merged_trans_ngram_counts = collections.Counter()
+      for c in ngram_counts:
+        merged_trans_ngram_counts += c
 
     merged_ref_ngram_counts = \
       collections.Counter({k: c for k, c in merged_ref_ngram_counts.items() if c >= freq_thre})
@@ -99,14 +102,14 @@ def compute_kl(reference_corpus, translation_corpus, max_order=4,
     # eps: smoothing parameter
     eps = 1e-10
     for k, c in merged_ref_ngram_counts.items():
-        _c = merged_trans_ngram_counts.get(k,0)
+      _c = merged_trans_ngram_counts.get(k, 0)
 
-        # apply smoothing
-        c += eps
-        _c += eps
+      # apply smoothing
+      c += eps
+      _c += eps
 
-        kl += - c/ref_total_nums * math.log((_c/c)*(ref_total_nums/trans_total_nums))
+      kl += - c/ref_total_nums * math.log((_c/c)*(ref_total_nums/trans_total_nums))
 
-    results['{}-gram'.format(order)]=kl
+    results["{}-gram".format(order)] = kl
 
   return results
